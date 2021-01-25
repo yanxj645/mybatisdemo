@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须对应一个真实存在的Mapper接口 -->
+<mapper namespace="cn.tedu.mybatis.mapper.UserMapper">
+
+    <!-- 下面编写一个查询,
+    这个查询对应Mapper接口中的一个方法
+    对应的依据是id属性和接口中的方法名-->
+    <select id="helloXml" resultType="java.lang.String">
+        select username from t_user where id=4
+    </select>
+
+    <!-- 动态删除 -->
+    <delete id="deleteByIds">
+        delete from t_user where id in(
+        <foreach collection="array" item="id"
+                 separator=",">
+            #{id}
+        </foreach>
+        )
+    </delete>
+
+    <!--  动态sql if修改  -->
+    <!--  这次修改需要的参数不是系统原生的,
+    所以要声明参数类型 使用 parameterType指定 -->
+    <update id="updateUserInfo"
+            parameterType="cn.tedu.mybatis.model.User">
+        update t_user
+        <set>
+            <if test="username != null">
+                username=#{username},
+            </if>
+            <if test="password != null">
+                password=#{password},
+            </if>
+            <if test="age != null">
+                age=#{age},
+            </if>
+            <if test="phone != null">
+                phone=#{phone},
+            </if>
+            <if test="email != null">
+                email=#{email}
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <!-- 动态sql查询 -->
+    <select id="findUserByParams"
+            resultType="cn.tedu.mybatis.model.User">
+        select
+        id,username,password,age,phone,email
+        from
+        t_user
+        <where>
+            <if test="username != null">
+                username like #{username}
+            </if>
+            <if test="age != null">
+                and age=#{age}
+            </if>
+            <if test="phone != null">
+                and phone like #{phone}
+            </if>
+        </where>
+    </select>
+
+    <!--  关联查询   -->
+    <select id="findUserDept"
+            resultType="cn.tedu.mybatis.vo.UserVo">
+        select u.id,username,d.name deptName
+        from t_user u
+        join t_dept d
+        on u.dept_id=d.id
+
+    </select>
+
+
+</mapper>

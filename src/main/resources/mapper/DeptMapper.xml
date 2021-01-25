@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+<!-- namespace必须对应一个真实存在的Mapper接口 -->
+<mapper namespace="cn.tedu.mybatis.mapper.DeptMapper">
+
+    <!--因为Mybatis自动映射功能不能满足我们这次查询的需求-->
+    <!--所以我们需要定义resultMap来手动映射列和属性的对应-->
+    <resultMap id="deptMap"
+               type="cn.tedu.mybatis.model.Dept">
+        <!--result表示一个对应关系,
+        column:列名,property:属性名 -->
+        <result column="id" property="id"/>
+        <result column="name" property="name"/>
+        <!-- collection表示实体类中的集合list -->
+        <!-- collection里面写的映射关系就是查询出的列
+         和List中User属性的对应关系-->
+        <!--这里的property仍然是属性名,那个集合的属性名-->
+        <!--ofType需要指定这个集合中的类型-->
+        <collection property="users"
+                    ofType="cn.tedu.mybatis.model.User">
+            <result column="userId" property="id" />
+            <result column="username" property="username" />
+            <result column="password" property="password" />
+            <result column="age" property="age" />
+            <result column="phone" property="phone" />
+            <result column="email" property="email" />
+        </collection>
+    </resultMap>
+
+    <select id="findDeptWithUsersById"
+            resultMap="deptMap">
+        select
+        d.id,
+        name,
+        u.id userId,
+        username,
+        password,
+        age,
+        phone,
+        email
+        from
+        t_dept d left join t_user u
+        on
+        u.dept_id=d.id
+        where d.id=#{id}
+
+
+    </select>
+
+
+</mapper>
